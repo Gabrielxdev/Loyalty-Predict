@@ -44,9 +44,9 @@ SELECT
 FROM
     tb_rn
 WHERE rnDia = 2
-)
+),
 
-
+tb_life_cycle as (
 SELECT 
     t1.*,
     t2.qtdDiasPenultimaTransacao,
@@ -56,9 +56,18 @@ SELECT
         WHEN t1.QtdDiasLastTransacao BETWEEN 8 AND 14 THEN 'turista'
         WHEN t1.QtdDiasLastTransacao BETWEEN 15 AND 28 THEN 'desencantado'
         WHEN t1.QtdDiasLastTransacao > 28 THEN 'zumbi'
-        
+        WHEN t1.QtdDiasLastTransacao <= 7 AND t2.qtdDiasPenultimaTransacao - t1.QtdDiasLastTransacao BETWEEN 15 AND 28 THEN 'reconquistado'
+        WHEN t1.QtdDiasLastTransacao <= 7 AND t2.qtdDiasPenultimaTransacao - t1.QtdDiasLastTransacao > 28 THEN 'reborn'
     END AS ciclo_vida
 FROM    
     tb_idade AS t1 
 LEFT JOIN tb_penultima_ativacao AS t2 ON t1.idCliente = t2.idCliente
+)
 
+SELECT
+    ciclo_vida,
+    count(ciclo_vida) 
+FROM
+    tb_life_cycle 
+GROUP BY ciclo_vida
+ORDER BY count(ciclo_vida) DESC
