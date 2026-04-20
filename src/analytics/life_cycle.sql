@@ -13,6 +13,7 @@ SELECT
     substr(DtCriacao, 0, 11) AS dtDia
 FROM    
     transacoes
+WHERE DtCriacao < '2025-09-30'
 ),
 
 tb_idade as (
@@ -54,10 +55,10 @@ SELECT
         WHEN t1.QtdDiasPrimTransacao <= 7 THEN 'curioso'
         WHEN t1.QtdDiasLastTransacao <= 7 AND t2.qtdDiasPenultimaTransacao - t1.QtdDiasLastTransacao <= 14 THEN 'fiel'
         WHEN t1.QtdDiasLastTransacao BETWEEN 8 AND 14 THEN 'turista'
-        WHEN t1.QtdDiasLastTransacao BETWEEN 15 AND 28 THEN 'desencantado'
-        WHEN t1.QtdDiasLastTransacao > 28 THEN 'zumbi'
-        WHEN t1.QtdDiasLastTransacao <= 7 AND t2.qtdDiasPenultimaTransacao - t1.QtdDiasLastTransacao BETWEEN 15 AND 28 THEN 'reconquistado'
-        WHEN t1.QtdDiasLastTransacao <= 7 AND t2.qtdDiasPenultimaTransacao - t1.QtdDiasLastTransacao > 28 THEN 'reborn'
+        WHEN t1.QtdDiasLastTransacao BETWEEN 15 AND 27 THEN 'desencantado'
+        WHEN t1.QtdDiasLastTransacao >= 28 THEN 'zumbi'
+        WHEN t1.QtdDiasLastTransacao <= 7 AND t2.qtdDiasPenultimaTransacao - t1.QtdDiasLastTransacao BETWEEN 15 AND 27 THEN 'reconquistado'
+        WHEN t1.QtdDiasLastTransacao <= 7 AND t2.qtdDiasPenultimaTransacao - t1.QtdDiasLastTransacao > 27 THEN 'reborn'
     END AS ciclo_vida
 FROM    
     tb_idade AS t1 
@@ -65,9 +66,8 @@ LEFT JOIN tb_penultima_ativacao AS t2 ON t1.idCliente = t2.idCliente
 )
 
 SELECT
-    ciclo_vida,
-    count(ciclo_vida) 
+    date('2025-09-30', '-1 day') as dtRef,
+    *
 FROM
     tb_life_cycle 
-GROUP BY ciclo_vida
-ORDER BY count(ciclo_vida) DESC
+
